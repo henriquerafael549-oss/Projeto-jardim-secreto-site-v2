@@ -17,7 +17,7 @@ O **Projeto Jardim Secreto** é uma plataforma de rede social leve e aconchegant
   - Pode curtir/não curtir comentários
   
 - **Desenvolvedor/Professor**:
-  - Requer e-mail Gmail e senha específica: `JARDIMSECRETO2015`
+  - Requer e-mail Gmail e senha específica: `#################` (censurado)
   - Todas as permissões de convidado +
   - Pode criar novos posts com título, descrição e imagem
   - Pode excluir qualquer post
