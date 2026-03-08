@@ -1,0 +1,1346 @@
+const API_URL = "https://script.google.com/macros/s/AKfycbzrBBJ2RAuL5aE8oydwsVl88x-8lhgfveliYn5WYo6-LGlI3HQc-tMLOmXMhN_8WaJq/exec";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 Projeto Jardim Secreto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --verde-escuro: #2d5016;
+            --verde-medio: #4a7c2e;
+            --verde-floresta: #3d6b2e;
+            --verde-musgo: #6b8e4e;
+            --verde-menta: #a8d5ba;
+            --verde-claro: #d4edda;
+            --verde-suave: #e8f5e9;
+            --branco: #ffffff;
+            --cinza-claro: #f8f9fa;
+            --sombra: rgba(45, 80, 22, 0.15);
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, var(--verde-suave) 0%, var(--verde-claro) 100%);
+            background-attachment: fixed;
+            color: var(--verde-escuro);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Folhas flutuantes decorativas */
+        .leaf-decoration {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .leaf-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .leaf-2 { top: 30%; right: 10%; animation-delay: 3s; }
+        .leaf-3 { bottom: 20%; left: 15%; animation-delay: 6s; }
+        .leaf-4 { top: 60%; right: 5%; animation-delay: 9s; }
+        .leaf-5 { bottom: 10%; right: 20%; animation-delay: 12s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-10px) rotate(-5deg); }
+            75% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-floresta) 100%);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 12px var(--sombra);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--branco);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            color: var(--verde-menta);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-logout {
+            background: var(--verde-musgo);
+            color: var(--branco);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--verde-medio);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--sombra);
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Tela de Login */
+        .login-screen {
+            background: var(--branco);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 30px var(--sombra);
+            text-align: center;
+            max-width: 500px;
+            margin: 4rem auto;
+            border: 3px solid var(--verde-menta);
+        }
+
+        .login-screen h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--verde-escuro);
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .login-screen .subtitle {
+            color: var(--verde-medio);
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .login-card {
+            background: var(--verde-suave);
+            border: 2px solid var(--verde-menta);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            background: var(--verde-menta);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--sombra);
+        }
+
+        .login-card h3 {
+            color: var(--verde-escuro);
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p {
+            color: var(--verde-medio);
+            font-size: 0.9rem;
+        }
+
+        /* Modal de login */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(45, 80, 22, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--branco);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 3px solid var(--verde-menta);
+        }
+
+        .modal-content h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--verde-escuro);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--verde-medio);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--verde-menta);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--verde-medio);
+            box-shadow: 0 0 0 3px rgba(74, 124, 46, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--verde-medio);
+            color: var(--branco);
+        }
+
+        .btn-primary:hover {
+            background: var(--verde-escuro);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--cinza-claro);
+            color: var(--verde-escuro);
+        }
+
+        .btn-secondary:hover {
+            background: var(--verde-menta);
+        }
+
+        /* Botão de criar post */
+        function createPost() {
+
+    if (currentUser.type !== 'developer') {
+        alert("Apenas desenvolvedores podem postar!");
+        return;
+    }
+
+    const title = document.getElementById("postTitle").value;
+    const description = document.getElementById("postDescription").value;
+
+    if (!title || !description) {
+        alert("Preencha título e descrição!");
+        return;
+    }
+
+    fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            title: title,
+            description: description,
+            author: currentUser.username,
+            image: currentImageData || ""
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        alert("Post publicado 🌿");
+
+        toggleCreateForm();
+
+        document.getElementById("postTitle").value = "";
+        document.getElementById("postDescription").value = "";
+
+        function loadPosts() {
+
+    fetch(API_URL)
+    .then(res => res.json())
+    .then(posts => {
+
+        const container = document.getElementById("postsContainer");
+        const emptyState = document.getElementById("emptyState");
+
+        if (!posts || posts.length === 0) {
+            container.innerHTML = "";
+            emptyState.classList.remove("hidden");
+            return;
+        }
+
+        emptyState.classList.add("hidden");
+
+        container.innerHTML = posts.reverse().map(post => `
+            <div class="post">
+
+                <div class="post-header">
+                    <div>
+                        <div class="post-author">🌳 ${post.author}</div>
+                    </div>
+                </div>
+
+                <h2 class="post-title">${post.title}</h2>
+
+                <p class="post-description">${post.description}</p>
+
+                ${post.image ? `<img src="${post.image}" class="post-image">` : ""}
+
+            </div>
+        `).join("");
+
+    })
+    .catch(err => {
+        console.error(err);
+    });
+
+}
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Erro ao postar");
+    });
+
+}
+            background: var(--verde-medio);
+            color: var(--branco);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--sombra);
+        }
+
+        .create-post-btn:hover {
+            background: var(--verde-escuro);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--sombra);
+        }
+
+        /* Post Card */
+        .post {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px var(--sombra);
+            border: 2px solid var(--verde-menta);
+            transition: all 0.3s ease;
+        }
+
+        .post:hover {
+            box-shadow: 0 6px 20px var(--sombra);
+            transform: translateY(-2px);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--verde-suave);
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: var(--verde-escuro);
+        }
+
+        .post-date {
+            color: var(--verde-musgo);
+            font-size: 0.85rem;
+        }
+
+        .post-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--verde-escuro);
+            margin-bottom: 0.8rem;
+        }
+
+        .post-description {
+            color: var(--verde-medio);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--verde-suave);
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--verde-menta);
+            background: var(--branco);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--verde-medio);
+        }
+
+        .action-btn:hover {
+            background: var(--verde-suave);
+            transform: scale(1.05);
+        }
+
+        .action-btn.liked {
+            background: var(--verde-menta);
+            border-color: var(--verde-medio);
+        }
+
+        .action-btn.disliked {
+            background: #ffebee;
+            border-color: #e57373;
+            color: #c62828;
+        }
+
+        .delete-btn {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 2px solid #ef9a9a;
+        }
+
+        .delete-btn:hover {
+            background: #ef5350;
+            color: white;
+        }
+
+        /* Comentários */
+        .comments-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--verde-suave);
+        }
+
+        .comments-toggle {
+            color: var(--verde-medio);
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .comments-toggle:hover {
+            color: var(--verde-escuro);
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 0.6rem;
+            border: 2px solid var(--verde-menta);
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+
+        .comment-submit {
+            background: var(--verde-medio);
+            color: var(--branco);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .comment-submit:hover {
+            background: var(--verde-escuro);
+        }
+
+        .comment {
+            background: var(--verde-suave);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid var(--verde-menta);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--verde-escuro);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .creator-badge {
+            background: var(--verde-medio);
+            color: var(--branco);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .comment-text {
+            color: var(--verde-medio);
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .comment-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid var(--verde-menta);
+            background: var(--branco);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .comment-action-btn:hover {
+            background: var(--verde-menta);
+        }
+
+        /* Formulário de criar post */
+        .create-post-form {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px var(--sombra);
+            border: 2px solid var(--verde-menta);
+        }
+
+        .create-post-form h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--verde-escuro);
+            margin-bottom: 1.5rem;
+        }
+
+        .file-upload-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid var(--verde-menta);
+            background: var(--verde-suave);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--verde-medio);
+        }
+
+        .file-upload-btn:hover {
+            background: var(--verde-menta);
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--verde-menta);
+            border-radius: 10px;
+            font-family: 'Lato', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--verde-medio);
+            box-shadow: 0 0 0 3px rgba(74, 124, 46, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--verde-musgo);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .login-screen {
+                padding: 2rem 1.5rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .file-upload-options {
+                flex-direction: column;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            color: #c62828;
+            background: #ffebee;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 2px solid #ef9a9a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Decorações flutuantes -->
+    <div class="leaf-decoration leaf-1">🍃</div>
+    <div class="leaf-decoration leaf-2">🌿</div>
+    <div class="leaf-decoration leaf-3">🍀</div>
+    <div class="leaf-decoration leaf-4">🌱</div>
+    <div class="leaf-decoration leaf-5">🌾</div>
+
+    <!-- Header (oculto inicialmente) -->
+    <header id="header" class="hidden">
+        <div class="header-content">
+            <div class="logo">
+                🌿 Projeto Jardim Secreto
+            </div>
+            <div class="user-info">
+                <span id="userDisplay"></span>
+                <button class="btn-logout" onclick="logout()">Sair 🚪</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="login-screen">
+        <h1>🌿 Projeto Jardim Secreto</h1>
+        <p class="subtitle">Um espaço verde para compartilhar e conectar</p>
+        
+        <div class="login-options">
+            <div class="login-card" onclick="openGuestLogin()">
+                <h3>🌱 Convidado / Usuário</h3>
+                <p>Entre sem senha, apenas com um nome de usuário</p>
+            </div>
+            
+            <div class="login-card" onclick="openDeveloperLogin()">
+                <h3>🌳 Desenvolvedor / Professor</h3>
+                <p>Acesso completo para criar e gerenciar posts</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login Convidado -->
+    <div id="guestModal" class="modal">
+        <div class="modal-content">
+            <h2>🌱 Login como Convidado</h2>
+            <div class="form-group">
+                <label>Nome de Usuário</label>
+                <input type="text" id="guestUsername" placeholder="Digite seu nome...">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="loginAsGuest()">Entrar 🌿</button>
+                <button class="btn btn-secondary" onclick="closeModal('guestModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login Desenvolvedor -->
+    <div id="developerModal" class="modal">
+        <div class="modal-content">
+            <h2>🌳 Login Desenvolvedor/Professor</h2>
+            <div id="devError" class="error-message hidden"></div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="devEmail" placeholder="seu-email@gmail.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="devPassword" placeholder="Digite a senha...">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="loginAsDeveloper()">Entrar 🌿</button>
+                <button class="btn btn-secondary" onclick="closeModal('developerModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Principal -->
+    <div id="mainContent" class="container hidden">
+        <!-- Botão de criar post (apenas para desenvolvedores) -->
+        <button id="createPostBtn" class="create-post-btn hidden" onclick="toggleCreateForm()">
+            ✨ Criar Novo Post
+        </button>
+
+        <!-- Formulário de criar post -->
+        <div id="createPostForm" class="create-post-form hidden">
+            <h2>🌿 Criar Novo Post</h2>
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" id="postTitle" placeholder="Digite o título do post...">
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="postDescription" placeholder="Compartilhe sua mensagem..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Imagem</label>
+                <input type="text" id="imageUrl" placeholder="Cole a URL da imagem aqui..." style="margin-bottom: 0.5rem;">
+                <div class="file-upload-options">
+                    <label class="file-upload-btn" for="imageFile">
+                        📁 Selecionar do dispositivo
+                    </label>
+                    <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                    <button class="file-upload-btn" onclick="previewImageUrl()">
+                        🔗 Usar URL
+                    </button>
+                </div>
+                <img id="imagePreview" class="image-preview hidden" alt="Preview">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="createPost()">Publicar 🌿</button>
+                <button class="btn btn-secondary" onclick="toggleCreateForm()">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Feed de Posts -->
+        <div id="postsContainer"></div>
+
+        <!-- Estado vazio -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">🌱</div>
+            <h3>Nenhum post ainda</h3>
+            <p>Seja o primeiro a compartilhar algo neste jardim secreto!</p>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados localStorage
+        const DB = {
+            users: 'jardim_users',
+            posts: 'jardim_posts',
+            comments: 'jardim_comments',
+            likes: 'jardim_likes',
+            session: 'jardim_session'
+        };
+
+        // Inicializar banco de dados
+        function initDB() {
+            if (!localStorage.getItem(DB.posts)) {
+                localStorage.setItem(DB.posts, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(DB.comments)) {
+                localStorage.setItem(DB.comments, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(DB.likes)) {
+                localStorage.setItem(DB.likes, JSON.stringify([]));
+            }
+        }
+
+        // Gerenciamento de sessão
+        let currentUser = null;
+
+        function checkSession() {
+            const session = localStorage.getItem(DB.session);
+            if (session) {
+                currentUser = JSON.parse(session);
+                showMainContent();
+            }
+        }
+
+        function openGuestLogin() {
+            document.getElementById('guestModal').classList.add('active');
+        }
+
+        function openDeveloperLogin() {
+            document.getElementById('developerModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.getElementById('devError').classList.add('hidden');
+        }
+
+        function loginAsGuest() {
+            const username = document.getElementById('guestUsername').value.trim();
+            if (!username) {
+                alert('Por favor, digite um nome de usuário! 🌿');
+                return;
+            }
+
+            currentUser = {
+                username: username,
+                type: 'guest',
+                loginDate: new Date().toISOString()
+            };
+
+            localStorage.setItem(DB.session, JSON.stringify(currentUser));
+            closeModal('guestModal');
+            showMainContent();
+        }
+
+        function loginAsDeveloper() {
+            const email = document.getElementById('devEmail').value.trim();
+            const password = document.getElementById('devPassword').value;
+            const errorDiv = document.getElementById('devError');
+
+            if (!email || !password) {
+                errorDiv.textContent = '⚠️ Por favor, preencha todos os campos!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (!email.includes('@gmail.com')) {
+                errorDiv.textContent = '⚠️ Por favor, use um e-mail do Gmail!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (password !== 'JARDIMSECRETO2015') {
+                errorDiv.textContent = '⚠️ Senha incorreta! Tente novamente.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            currentUser = {
+                username: email.split('@')[0],
+                email: email,
+                type: 'developer',
+                loginDate: new Date().toISOString()
+            };
+
+            localStorage.setItem(DB.session, JSON.stringify(currentUser));
+            closeModal('developerModal');
+            showMainContent();
+        }
+
+        function logout() {
+            localStorage.removeItem(DB.session);
+            currentUser = null;
+            location.reload();
+        }
+
+        function showMainContent() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('header').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+
+            const userType = currentUser.type === 'developer' ? '🌳 Desenvolvedor' : '🌱 Convidado';
+            document.getElementById('userDisplay').textContent = `${userType}: ${currentUser.username}`;
+
+            if (currentUser.type === 'developer') {
+                document.getElementById('createPostBtn').classList.remove('hidden');
+            }
+
+            loadPosts();
+        }
+
+        // Gerenciamento de imagens
+        let currentImageData = null;
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                const preview = document.getElementById('imagePreview');
+                preview.src = currentImageData;
+                preview.classList.remove('hidden');
+                document.getElementById('imageUrl').value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewImageUrl() {
+            const url = document.getElementById('imageUrl').value.trim();
+            if (!url) {
+                alert('Por favor, cole uma URL de imagem! 🖼️');
+                return;
+            }
+
+            currentImageData = url;
+            const preview = document.getElementById('imagePreview');
+            preview.src = url;
+            preview.classList.remove('hidden');
+            document.getElementById('imageFile').value = '';
+        }
+
+        // Toggle formulário de criação
+        function toggleCreateForm() {
+            const form = document.getElementById('createPostForm');
+            form.classList.toggle('hidden');
+            
+            if (form.classList.contains('hidden')) {
+                // Limpar formulário
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postDescription').value = '';
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('imageFile').value = '';
+                document.getElementById('imagePreview').classList.add('hidden');
+                currentImageData = null;
+            }
+        }
+
+        // Criar post
+        function createPost() {
+            if (currentUser.type !== 'developer') {
+                alert('Apenas desenvolvedores podem criar posts! 🌳');
+                return;
+            }
+
+            const title = document.getElementById('postTitle').value.trim();
+            const description = document.getElementById('postDescription').value.trim();
+
+            if (!title || !description) {
+                alert('Por favor, preencha título e descrição! 🌿');
+                return;
+            }
+
+            const posts = JSON.parse(localStorage.getItem(DB.posts));
+            const newPost = {
+                id: Date.now().toString(),
+                title: title,
+                description: description,
+                image: currentImageData,
+                author: currentUser.username,
+                authorType: currentUser.type,
+                date: new Date().toISOString(),
+                likes: 0,
+                dislikes: 0
+            };
+
+            posts.unshift(newPost);
+            localStorage.setItem(DB.posts, JSON.stringify(posts));
+
+            toggleCreateForm();
+            loadPosts();
+        }
+
+        // Carregar posts
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem(DB.posts));
+            const container = document.getElementById('postsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (posts.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            container.innerHTML = posts.map(post => renderPost(post)).join('');
+        }
+
+        function renderPost(post) {
+            const likes = getLikesForPost(post.id);
+            const userLike = getUserLikeForPost(post.id);
+            const comments = getCommentsForPost(post.id);
+            const canDelete = currentUser.type === 'developer';
+
+            const imageHtml = post.image ? `<img src="${post.image}" alt="${post.title}" class="post-image">` : '';
+            
+            const deleteBtn = canDelete ? `<button class="action-btn delete-btn" onclick="deletePost('${post.id}')">🗑️ Excluir</button>` : '';
+
+            const likeClass = userLike === 'like' ? 'liked' : '';
+            const dislikeClass = userLike === 'dislike' ? 'disliked' : '';
+
+            return `
+                <div class="post" data-post-id="${post.id}">
+                    <div class="post-header">
+                        <div>
+                            <div class="post-author">🌳 ${post.author}</div>
+                            <div class="post-date">${formatDate(post.date)}</div>
+                        </div>
+                        ${deleteBtn}
+                    </div>
+                    <h2 class="post-title">${post.title}</h2>
+                    <p class="post-description">${post.description}</p>
+                    ${imageHtml}
+                    <div class="post-actions">
+                        <button class="action-btn ${likeClass}" onclick="likePost('${post.id}', 'like')">
+                            👍 ${likes.likes}
+                        </button>
+                        <button class="action-btn ${dislikeClass}" onclick="likePost('${post.id}', 'dislike')">
+                            👎 ${likes.dislikes}
+                        </button>
+                        <button class="action-btn" onclick="toggleComments('${post.id}')">
+                            💬 ${comments.length} Comentários
+                        </button>
+                    </div>
+                    <div class="comments-section hidden" id="comments-${post.id}">
+                        <div class="comment-form">
+                            <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Escreva um comentário...">
+                            <button class="comment-submit" onclick="addComment('${post.id}')">Enviar</button>
+                        </div>
+                        <div id="comments-list-${post.id}">
+                            ${comments.map(comment => renderComment(comment, post.author)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderComment(comment, postAuthor) {
+            const isCreator = comment.author === postAuthor;
+            const creatorBadge = isCreator ? '<span class="creator-badge">🏴 Criador</span>' : '';
+            const canDelete = currentUser.type === 'developer';
+            const deleteBtn = canDelete ? `<button class="comment-action-btn delete-btn" onclick="deleteComment('${comment.id}', '${comment.postId}')">🗑️</button>` : '';
+
+            const commentLikes = getLikesForComment(comment.id);
+            const userCommentLike = getUserLikeForComment(comment.id);
+
+            const likeClass = userCommentLike === 'like' ? 'liked' : '';
+            const dislikeClass = userCommentLike === 'dislike' ? 'disliked' : '';
+
+            return `
+                <div class="comment">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            ${comment.author}
+                            ${creatorBadge}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${deleteBtn}
+                        </div>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-actions">
+                        <button class="comment-action-btn ${likeClass}" onclick="likeComment('${comment.id}', '${comment.postId}', 'like')">
+                            👍 ${commentLikes.likes}
+                        </button>
+                        <button class="comment-action-btn ${dislikeClass}" onclick="likeComment('${comment.id}', '${comment.postId}', 'dislike')">
+                            👎 ${commentLikes.dislikes}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Sistema de likes
+        function likePost(postId, type) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const existingLike = likes.find(l => l.postId === postId && l.userId === currentUser.username && l.type === 'post');
+
+            if (existingLike) {
+                if (existingLike.likeType === type) {
+                    // Remove like
+                    const index = likes.indexOf(existingLike);
+                    likes.splice(index, 1);
+                } else {
+                    // Muda tipo de like
+                    existingLike.likeType = type;
+                }
+            } else {
+                // Novo like
+                likes.push({
+                    id: Date.now().toString(),
+                    postId: postId,
+                    userId: currentUser.username,
+                    type: 'post',
+                    likeType: type,
+                    date: new Date().toISOString()
+                });
+            }
+
+            localStorage.setItem(DB.likes, JSON.stringify(likes));
+            loadPosts();
+        }
+
+        function getLikesForPost(postId) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const postLikes = likes.filter(l => l.postId === postId && l.type === 'post');
+            
+            return {
+                likes: postLikes.filter(l => l.likeType === 'like').length,
+                dislikes: postLikes.filter(l => l.likeType === 'dislike').length
+            };
+        }
+
+        function getUserLikeForPost(postId) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const userLike = likes.find(l => l.postId === postId && l.userId === currentUser.username && l.type === 'post');
+            return userLike ? userLike.likeType : null;
+        }
+
+        // Sistema de comentários
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            commentsSection.classList.toggle('hidden');
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+
+            if (!text) {
+                alert('Por favor, escreva um comentário! 💬');
+                return;
+            }
+
+            const comments = JSON.parse(localStorage.getItem(DB.comments));
+            const newComment = {
+                id: Date.now().toString(),
+                postId: postId,
+                author: currentUser.username,
+                authorType: currentUser.type,
+                text: text,
+                date: new Date().toISOString()
+            };
+
+            comments.push(newComment);
+            localStorage.setItem(DB.comments, JSON.stringify(comments));
+
+            input.value = '';
+            loadPosts();
+        }
+
+        function getCommentsForPost(postId) {
+            const comments = JSON.parse(localStorage.getItem(DB.comments));
+            return comments.filter(c => c.postId === postId);
+        }
+
+        function likeComment(commentId, postId, type) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const existingLike = likes.find(l => l.postId === commentId && l.userId === currentUser.username && l.type === 'comment');
+
+            if (existingLike) {
+                if (existingLike.likeType === type) {
+                    const index = likes.indexOf(existingLike);
+                    likes.splice(index, 1);
+                } else {
+                    existingLike.likeType = type;
+                }
+            } else {
+                likes.push({
+                    id: Date.now().toString(),
+                    postId: commentId,
+                    userId: currentUser.username,
+                    type: 'comment',
+                    likeType: type,
+                    date: new Date().toISOString()
+                });
+            }
+
+            localStorage.setItem(DB.likes, JSON.stringify(likes));
+            loadPosts();
+        }
+
+        function getLikesForComment(commentId) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const commentLikes = likes.filter(l => l.postId === commentId && l.type === 'comment');
+            
+            return {
+                likes: commentLikes.filter(l => l.likeType === 'like').length,
+                dislikes: commentLikes.filter(l => l.likeType === 'dislike').length
+            };
+        }
+
+        function getUserLikeForComment(commentId) {
+            const likes = JSON.parse(localStorage.getItem(DB.likes));
+            const userLike = likes.find(l => l.postId === commentId && l.userId === currentUser.username && l.type === 'comment');
+            return userLike ? userLike.likeType : null;
+        }
+
+        // Deletar post
+        function deletePost(postId) {
+            if (currentUser.type !== 'developer') {
+                alert('Apenas desenvolvedores podem excluir posts! 🌳');
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja excluir este post? 🗑️')) {
+                return;
+            }
+
+            const posts = JSON.parse(localStorage.getItem(DB.posts));
+            const index = posts.findIndex(p => p.id === postId);
+            
+            if (index > -1) {
+                posts.splice(index, 1);
+                localStorage.setItem(DB.posts, JSON.stringify(posts));
+                
+                // Remover comentários e likes do post
+                const comments = JSON.parse(localStorage.getItem(DB.comments));
+                const filteredComments = comments.filter(c => c.postId !== postId);
+                localStorage.setItem(DB.comments, JSON.stringify(filteredComments));
+
+                const likes = JSON.parse(localStorage.getItem(DB.likes));
+                const filteredLikes = likes.filter(l => l.postId !== postId);
+                localStorage.setItem(DB.likes, JSON.stringify(filteredLikes));
+
+                loadPosts();
+            }
+        }
+
+        // Deletar comentário
+        function deleteComment(commentId, postId) {
+            if (currentUser.type !== 'developer') {
+                alert('Apenas desenvolvedores podem excluir comentários! 🌳');
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja excluir este comentário? 🗑️')) {
+                return;
+            }
+
+            const comments = JSON.parse(localStorage.getItem(DB.comments));
+            const index = comments.findIndex(c => c.id === commentId);
+            
+            if (index > -1) {
+                comments.splice(index, 1);
+                localStorage.setItem(DB.comments, JSON.stringify(comments));
+
+                // Remover likes do comentário
+                const likes = JSON.parse(localStorage.getItem(DB.likes));
+                const filteredLikes = likes.filter(l => l.postId !== commentId || l.type !== 'comment');
+                localStorage.setItem(DB.likes, JSON.stringify(filteredLikes));
+
+                loadPosts();
+            }
+        }
+
+        // Utilitários
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'Agora mesmo';
+            if (minutes < 60) return `${minutes}m atrás`;
+            if (hours < 24) return `${hours}h atrás`;
+            if (days < 7) return `${days}d atrás`;
+            
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        // Inicializar aplicação
+        initDB();
+        checkSession();
+    </script>
+</body>
+</html>
